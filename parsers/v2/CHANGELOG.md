@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.15]
+
+### Features
+
+- *(parsers-v2)* Add the `mistral_4` UnifiedParser for Mistral v11+ `[TOOL_CALLS]NAME[ARGS]{json}` calls and `[THINK]` reasoning, with forced `tool_choice`, `tool_choice` auto and reply JSON-schema grammars. It registers as `mistral_4` only; the `mistral` name keeps its current routing.
+
 ## [0.9.14](https://github.com/ai-dynamo/frontend-crates/compare/dynamo-parsers-v2-v0.9.13...dynamo-parsers-v2-v0.9.14) - 2026-11-07
 
 ### Bug fixes
