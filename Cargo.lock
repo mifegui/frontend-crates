@@ -1244,7 +1244,7 @@ dependencies = [
 
 [[package]]
 name = "dynamo-parsers-v2"
-version = "0.9.15"
+version = "0.9.16"
 dependencies = [
  "anyhow",
  "dynamo-structural-tag",
@@ -1325,6 +1325,7 @@ dependencies = [
  "base64 0.22.1",
  "basetenkenizer",
  "blake3",
+ "fancy-regex 0.13.0",
  "fastokens",
  "moka",
  "rayon",
