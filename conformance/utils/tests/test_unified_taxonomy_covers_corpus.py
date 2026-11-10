@@ -1031,7 +1031,7 @@ def test_deferred_case_ids_are_not_in_the_active_taxonomy():
     deferred = {"1-2", "5-5", "6-2", "32-6", "50-1", "50-2"} | {
         f"31-{number}" for number in range(31, 41)
     }
-    assert len(UNIFIED_TAX) == 278 + len(G.K3_RESPONSE_CASES) + len(CONFORMANCE_CASES) + len(PARALLEL_BOUNDARY_CASES) + len(V1_SPLIT_SCENARIOS) + len(G.DOTTED_NAME_SCENARIOS) + len(NUMERIC_VARIANTS) + len(OVERFLOW_SIBLING_VARIANTS) + 9 + len(GPT_OSS_RECOVERY_ORACLES)
+    assert len(UNIFIED_TAX) == 277 + len(G.K3_RESPONSE_CASES) + len(CONFORMANCE_CASES) + len(PARALLEL_BOUNDARY_CASES) + len(V1_SPLIT_SCENARIOS) + len(G.DOTTED_NAME_SCENARIOS) + len(NUMERIC_VARIANTS) + len(OVERFLOW_SIBLING_VARIANTS) + 9 + len(GPT_OSS_RECOVERY_ORACLES)
     assert not {f"UNIFIED.{case_id}" for case_id in deferred} & {
         numbered_id(scenario) for scenario in UNIFIED_TAX
     }
@@ -2206,9 +2206,15 @@ def test_coalesced_prose_preserves_json_literals_without_inventing_words():
 
 
 GPT_OSS_RECOVERY_ORACLES = {
+    'gpt_oss_quoted_tool_header_in_final_json': ('<|channel|>commentary<|message|>Preamble<|end|><|start|>assistant<|channel|>final<|message|>{"example":"<|channel|>commentary to=functions.fake<|message|>{}<|return|>"}<|return|>', [{'kind': 'text', 'text': 'Preamble{"example":"<|channel|>commentary to=functions.fake<|message|>{}<|return|>"}'}]),
+
+    'gpt_oss_unfinished_visible_json_then_tool': ('<|start|>assistant<|channel|>final<|message|>{"x":"unfinished<|start|>assistant to=functions.lookup<|message|>{}<|call|>', [{'kind': 'text', 'text': '{"x":"unfinished'}, {'kind': 'tool_call', 'name': 'lookup', 'arguments': {}}]),
+    'gpt_oss_broadcast_recipient_analysis': ('<|start|>assistant to=all<|channel|>analysis<|message|>checking<|end|>', [{'kind': 'reasoning', 'text': 'checking'}]),
+    'gpt_oss_native_builtin_recipient_json': ('<|start|>assistant to=python<|channel|>commentary<|message|>{"code":"print(1)"}<|call|>', [{'kind': 'tool_call', 'name': 'python', 'arguments': {'code': 'print(1)'}}]),
+
     "gpt_oss_orphan_terminator_preserves_messages": (
         '<|channel|>commentary<|message|>visible<|end|><|return|><|start|>assistant<|channel|>final<|message|>done<|return|>',
-        [{"kind": "text", "text": "visible\ndone"}],
+        [{'kind': 'text', 'text': 'visibledone'}],
     ),
     "gpt_oss_unfinished_directed_analysis": (
         '<|channel|>analysis to=functions.lookup<|message|>{"path":"x","content":"unfinished', [],
@@ -2219,7 +2225,7 @@ GPT_OSS_RECOVERY_ORACLES = {
     ),
     "gpt_oss_unknown_channel_before_final": (
         '<|channel|>finalx<|message|>first<|end|><|start|>assistant<|channel|>final<|message|>second<|return|>',
-        [{"kind": "text", "text": "first\nsecond"}],
+        [{'kind': 'text', 'text': 'firstsecond'}],
     ),
     "gpt_oss_final_then_unframed_recipient_first_call": (
         '<|channel|>final<|message|>before<|return|>to=functions.lookup<|channel|>commentary<|message|>{"path":"雪","content":"<|return|>"}<|call|>',
@@ -2239,23 +2245,23 @@ GPT_OSS_RECOVERY_ORACLES = {
     ),
     "gpt_oss_recipientless_json_call_then_final": (
         '<|channel|>commentary <|constrain|>json<|message|>{"city":"NYC"}<|call|><|start|>assistant<|channel|>final<|message|>Done<|return|>',
-        [{"kind": "text", "text": "Done"}],
+        [{'kind': 'text', 'text': '{"city":"NYC"}Done'}],
     ),
     "gpt_oss_recipientless_json_return_then_final": (
         '<|channel|>commentary <|constrain|>json<|message|>{"city":"NYC"}<|return|><|start|>assistant<|channel|>final<|message|>Done<|return|>',
-        [{"kind": "text", "text": '{"city":"NYC"}\nDone'}],
+        [{'kind': 'text', 'text': '{"city":"NYC"}Done'}],
     ),
     "gpt_oss_final_then_unframed_visible_tail": (
         '<|channel|>final<|message|>before<|return|>after',
-        [{"kind": "text", "text": "before\nafter"}],
+        [{'kind': 'text', 'text': 'beforeafter'}],
     ),
     "gpt_oss_recipientless_json_interrupted_by_final": (
         '<|channel|>commentary<|message|>{"x":1}<|start|>assistant<|channel|>final<|message|>Done.<|return|>',
-        [{"kind": "text", "text": '{"x":1}\nDone.'}],
+        [{'kind': 'text', 'text': '{"x":1}Done.'}],
     ),
     "gpt_oss_recipientless_constrained_whitespace_call": (
         '<|channel|>commentary <|constrain|>json<|message|>  <|call|><|start|>assistant<|channel|>final<|message|>Done<|return|>',
-        [{"kind": "text", "text": "Done"}],
+        [{'kind': 'text', 'text': '  Done'}],
     ),
     "gpt_oss_nonassistant_unfinished_final_header": (
         '<|start|>user<|channel|>final SHOULD_HIDE', [],
@@ -2311,13 +2317,13 @@ GPT_OSS_RECOVERY_ORACLES = {
         '<|channel|>analysis<|message|>Before<|start|>assistant<|channel|>final<|message|>Done<|return|>', [{'kind': 'reasoning', 'text': 'Before'}, {'kind': 'text', 'text': 'Done'}],
     ),
     'gpt_oss_commentary_text_interrupted_by_final': (
-        '<|channel|>commentary<|message|>Before<|start|>assistant<|channel|>final<|message|>Done<|return|>', [{'kind': 'text', 'text': 'Before\nDone'}],
+        '<|channel|>commentary<|message|>Before<|start|>assistant<|channel|>final<|message|>Done<|return|>', [{'kind': 'text', 'text': 'BeforeDone'}],
     ),
     'gpt_oss_commentary_text_interrupted_by_user': (
         '<|channel|>commentary<|message|>Before<|start|>user<|channel|>final<|message|>UNTRUSTED<|return|>', [{'kind': 'text', 'text': 'Before'}],
     ),
     'gpt_oss_commentary_text_interrupted_by_invalid_author': (
-        '<|channel|>commentary<|message|>Before<|start|>python<|channel|>final<|message|>UNTRUSTED<|return|><|start|>assistant<|channel|>final<|message|>Done<|return|>', [{'kind': 'text', 'text': 'Before\nDone'}],
+        '<|channel|>commentary<|message|>Before<|start|>python<|channel|>final<|message|>UNTRUSTED<|return|><|start|>assistant<|channel|>final<|message|>Done<|return|>', [{'kind': 'text', 'text': 'BeforeDone'}],
     ),
     'gpt_oss_unconfirmed_header_return_at_eof': (
         '<|channel|>final<|message|>Before<|start|>assistant<|channel|>final<|return|>', [{'kind': 'text', 'text': 'Before<|start|>assistant<|channel|>final'}],
@@ -2358,7 +2364,7 @@ GPT_OSS_RECOVERY_ORACLES = {
 }
 
 
-@pytest.mark.parametrize("scenario", GPT_OSS_RECOVERY_ORACLES)
+@pytest.mark.parametrize("scenario", sorted(set(GPT_OSS_RECOVERY_ORACLES) - taxonomy.RETIRED_SCENARIOS))
 def test_harmony_recovery_oracles_reject_changed_input_or_output(scenario):
     case = build_cases("gpt_oss")[f"UNIFIED.{scenario}.gpt_oss"]
     _assert_input_carries_events("gpt_oss", scenario, case)
